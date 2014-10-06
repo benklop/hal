@@ -4,14 +4,17 @@ require 'yaml'
 
 
 class Hal
-  config = YAML.load_file(File.expand_path("etc/config.yml"))
+  @config_file = YAML.load_file(File.expand_path("etc/config.yml"))
+ 
   def initialize
     @bot = Cinch::Bot.new do
       configure do |c|
-        c.server = config['server']
-        c.channels = config['channels']
-        c.nick = config['nick']
+        c.server = @config_file["server"]
+        c.channels = @config_file.channels
+        c.nick = @config_file.nick
       end
+
+      self.add_plugins
 
       on :message, /^(hello|hi)/i do |m|
         m.reply "Hello, #{m.user.nick}"
@@ -78,7 +81,7 @@ class Hal
     end
   end
 
-  initialize()
-  add_plugins()
-  @bot.start
+  def start
+    @bot.start
+  end
 end

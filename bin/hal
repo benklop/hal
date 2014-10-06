@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-$:.unshift(File.expand_path('..', __FILE__))
-require 'lib/hal.rb'
+load(File.expand_path("lib/hal.rb"))
 
-Hal::bot.start
+hal = Hal.new
+
+hal.start

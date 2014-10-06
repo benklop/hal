@@ -1,9 +1,9 @@
---- !trifecta bot named hal
-server  : irc.vmware.com
+--- #trifecta bot
+server:   irc.vmware.com
 channels:
-        - '#trifecta'
-nick    : Hal
-admin   : benklop
+       - '#trifecta'
+nick:     Hal
+admin:    benklop
 
 plugins:
-       - 'admin'
+      - 'admin'
