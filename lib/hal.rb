@@ -1,4 +1,5 @@
 require 'cinch'
+require 'yaml'
 
 config = YAML.load_file('../etc/config.yml')
 

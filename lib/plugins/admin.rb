@@ -57,13 +57,12 @@ class Admin
     m.reply "Another user with admin privileges must reply with '!auth' to allow you to become a permanent admin. '!decl' will decline."
   end
   
-  def auth(m)
+  def auth(m, nick)
     if is_admin?(m.user) do
       auser = @@tentative
       @@tentative = nil
       @@admins.push(auser)
       m.reply "#{m.user}: you have added '#{auser}' to the admins group!"
-
     end
   end
   
