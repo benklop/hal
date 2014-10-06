@@ -1,7 +1,7 @@
 require 'cinch'
 require 'yaml'
 
-config = YAML.load_file('../etc/config.yml')
+config = YAML.load_file('etc/config.yml')
 
 bot = Cinch::Bot.new do
   configure do |c|
