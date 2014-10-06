@@ -1,5 +1,6 @@
 require 'cinch'
 
+config = YAML.load_file('../etc/config.yml')
 
 bot = Cinch::Bot.new do
   configure do |c|
@@ -7,6 +8,8 @@ bot = Cinch::Bot.new do
     c.channels = ["#trifecta"]
     c.nick = "Hal"
   end
+
+load('plugins/admin')
 
   on :message, /^(hello|hi)/i do |m|
     m.reply "Hello, #{m.user.nick}"

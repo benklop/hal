@@ -4,9 +4,9 @@ require 'yaml'
 class Admin
   include Cinch::Plugin
   
-  match "op", method: :op
-  match "auth", method: :auth
-  match "decl", method: :decl
+  match 'op', method: :op
+  match 'auth', method: :auth
+  match 'decl', method: :decl
   match /^!deop .+/, method: :deop
   listen_to :join
   
@@ -15,12 +15,12 @@ class Admin
     super
 
     synchronize(:admin_config) do
-      config = YAML.load_file("../../etc/admin.yml")
-      @admins = config["ops"]
-      @admins.empty? do
-	@admins = ["benklop"]
+      config = YAML.load_file('../../etc/admin.yml')
+      @@admins = config['ops']
+      @@admins.empty? do
+	      @@admins = ['benklop']
       end
-      def @@tentative
+      @@tentative
     end
   end
   
@@ -31,16 +31,16 @@ class Admin
   helpers do
     def is_admin?(user)
       user.refresh
-      true if @admins.include?(user.nick)
+      true if @@admins.include?(user.nick)
     end
     
     def save_config
       config["ops"] = op_users
     
       synchronize(:admin_config) do
-	File.open("../../etc/admin.yml", 'w') do |f|
-	  YAML.dump(data, f)
-	end
+	      File.open("../../etc/admin.yml", 'w') do |f|
+	        YAML.dump(data, f)
+	      end
       end
     end
       
@@ -58,13 +58,24 @@ class Admin
   end
   
   def auth(m)
+    if is_admin?(m.user) do
+      auser = @@tentative
+      @@tentative = nil
+      @@admins.push(auser)
+      m.reply "#{m.user}: you have added '#{auser}' to the admins group!"
+
+    end
   end
   
   def decl(m)
+    @@tentative = nil
+    m.reply "#{m.user}: '#{auser}' request has been declined."
+  end
   end
   
   def deauth(m, nick)
-    
+    @@admins.delete(nick)
+    m.reply "#{m.user}: '#{nick}' has been removed from the admins group!"
   end
   
 end
