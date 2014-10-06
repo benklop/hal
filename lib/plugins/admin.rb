@@ -15,7 +15,7 @@ class Admin
     super
 
     synchronize(:admin_config) do
-      config = YAML.load_file('../../etc/admin.yml')
+      config = YAML.load_file('etc/admin.yml')
       @@admins = config['ops']
       @@admins.empty? do
 	      @@admins = ['benklop']
@@ -28,22 +28,19 @@ class Admin
     save_config
   end
   
-  helpers do
-    def is_admin?(user)
-      user.refresh
-      true if @@admins.include?(user.nick)
-    end
+  def is_admin?(user)
+    user.refresh
+    true if @@admins.include?(user.nick)
+  end
     
-    def save_config
-      config["ops"] = op_users
-    
-      synchronize(:admin_config) do
-	      File.open("../../etc/admin.yml", 'w') do |f|
-	        YAML.dump(data, f)
-	      end
+  def save_config
+    config["ops"] = op_users
+  
+    synchronize(:admin_config) do
+      File.open("../../etc/admin.yml", 'w') do |f|
+        YAML.dump(data, f)
       end
-    end
-      
+    end  
   end
   
   def join(m, channel)

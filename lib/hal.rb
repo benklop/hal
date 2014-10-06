@@ -10,7 +10,7 @@ bot = Cinch::Bot.new do
     c.nick = "Hal"
   end
 
-load('plugins/admin')
+load('lib/plugins/admin.rb')
 
   on :message, /^(hello|hi)/i do |m|
     m.reply "Hello, #{m.user.nick}"
