@@ -3,7 +3,15 @@ server:   irc.vmware.com
 channels:
        - '#trifecta'
 nick:     Hal
-admin:    benklop
+user:     trifecta
 
 plugins:
-      - 'admin'
+      -
+        name: 'Admin'
+        config:
+          file: 'admin.yml'
+      -
+        name: 'Identify'
+        config:
+          :password: "trifecta"
+          :type: :nickserv

@@ -2,19 +2,30 @@ require 'cinch'
 require 'yaml'
 
 
-
 class Hal
-  @config_file = YAML.load_file(File.expand_path("etc/config.yml"))
- 
+
+
+
+  def add_plugins
+    config_file = YAML.load_file(File.expand_path("etc/config.yml"))
+    plugin_list = config_file["plugins"]
+    puts "loading plugins #{plugin_list}"
+    plugin_list.each do |plugin|
+      load(File.expand_path("lib/plugins/#{plugin['name']}.rb"))
+      @bot.config.plugins.plugins.push(Module.const_get(plugin['name']))
+      @bot.config.plugins.options[Module.const_get(plugin['name'])] = plugin['config']
+    end
+  end
+
   def initialize
     @bot = Cinch::Bot.new do
       configure do |c|
-        c.server = @config_file["server"]
-        c.channels = @config_file.channels
-        c.nick = @config_file.nick
+        config_file = YAML.load_file(File.expand_path("etc/config.yml"))
+        c.server = config_file["server"]
+        c.channels = config_file["channels"]
+        c.nick = config_file["nick"]
+        c.user = config_file["user"]
       end
-
-      self.add_plugins
 
       on :message, /^(hello|hi)/i do |m|
         m.reply "Hello, #{m.user.nick}"
@@ -71,15 +82,12 @@ class Hal
         m.reply "#{m.user.nick} you should grab a can of #{drinks.sample}!"
       end
     end
+
+    add_plugins
+
   end
 
-  def add_plugins
-    plugin_list = config['plugins']
-    plugin_list.each do |plugin|
-      load(File.expand_path("lib/plugins/#{plugin}.rb"))
-      @bot.configuration.plugins.plugins.push(plugin)
-    end
-  end
+
 
   def start
     @bot.start
