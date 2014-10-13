@@ -27,11 +27,11 @@ class Hal
         c.user = config_file["user"]
       end
 
-      on :message, /^(hello|hi)/i do |m|
+      on :message, /(^|^hal:.)(hello|hi)($|.hal)/i do |m|
         m.reply "Hello, #{m.user.nick}"
       end
 
-      on :message, /^(thanks.? hal|thank you.? hal)/i do |m|
+      on :message, /(^|^hal:.)(thanks|thank you)($|.? hal)/i do |m|
         m.reply "You're welcome, #{m.user.nick}"
       end
 
