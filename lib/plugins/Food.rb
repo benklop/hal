@@ -4,8 +4,6 @@ require 'yelp'
 class Cinch::Food
   include Cinch::Plugin
 
-  #plugin_name = "Food"
-
   match 'snack', method: :snack
   match 'drink', method: :drink
   match /i.?m hungry/i, use_prefix: false, method: :snack
@@ -25,15 +23,15 @@ class Cinch::Food
       prefix = ""
     end
     
-    m.reply "#{prefix}#{plugin_name} !snack"
-    m.reply "#{prefix}#{plugin_name} !drink"
-    m.reply "#{prefix}#{plugin_name} !lunch"
+    m.reply "#{prefix}Food !snack (i.?m hungry) - Recommend a snack"
+    m.reply "#{prefix}Food !drink (i.?m thirsty) - Recommend a drink"
+    m.reply "#{prefix}Food !lunch (i hunger) - Recommend a restaurant"
   end
   
   def snack(m)
     
-      if(Time.now.hour > 11 && Time.now.hour < 13)
-	food(m)
+      if(Time.now.hour > 11 && Time.now.hour < 14)
+	lunch(m)
       else
         puts "getting a snack"
         snacks = [

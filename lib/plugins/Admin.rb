@@ -4,7 +4,6 @@ require 'yaml'
 class Cinch::Admin
   include Cinch::Plugin
   
-  #plugin_name = "Admin"
   
   match 'op', method: :op
   match 'auth', method: :auth
@@ -16,7 +15,7 @@ class Cinch::Admin
   listen_to :join, method: :join
   listen_to :identified, method: :elevate
   listen_to :help, method: :help
-  
+  listen_to :connect, :method => :on_connect 
 
   
   def on_connect(*)
@@ -31,10 +30,11 @@ class Cinch::Admin
       prefix = ""
     end
     
-    m.reply "#{prefix}#{plugin_name} !op Request Admin on channel"
-    m.reply "#{prefix}#{plugin_name} !auth Grant Admin request"
-    m.reply "#{prefix}#{plugin_name} !decl Decline Admin request"
-    m.reply "#{prefix}#{plugin_name} !deop NICK Remove Admin"
+    m.reply "#{prefix}Admin !op - Request Admin on channel"
+    m.reply "#{prefix}Admin !auth - Grant Admin request"
+    m.reply "#{prefix}Admin !decl - Decline Admin request"
+    m.reply "#{prefix}Admin !deop NICK - Remove Admin"
+    m.reply "#{prefix}Admin !load (PLUGNAME|all) - Reload plugin"
   end
   
   def unregister
@@ -101,7 +101,9 @@ class Cinch::Admin
   end
   
   def elevate(m)
-    User("ChanServ@hybserv.eng.vmware.com").send("Op #trifecta")
+    m.bot.channels.each do |channel|
+      User(config[:chanserv]).send("Op " + channel.name)
+    end
   end
 
 
@@ -110,10 +112,9 @@ class Cinch::Admin
     puts "checking user list for #{user.nick}"
     @filemutex.synchronize do
       config_file = YAML.load_file(File.expand_path(@filepath))
+      @@admins = config_file["admins"]
+      @@admins.include?(user.nick)
     end
-    @@admins = config_file["admins"]
-
-    @@admins.include?(user.nick)
   end
     
   def save_config

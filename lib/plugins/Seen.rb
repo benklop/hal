@@ -44,6 +44,15 @@ class Cinch::Seen
   listen_to :connect, :method => :on_connect
   listen_to :channel, :method => :on_channel
 
+  listen_to :help, method: :help
+  def help(m, prefix)
+    if(prefix.nil?)
+      prefix = ""
+    end
+    
+    m.reply "#{prefix}Seen !seen USERNAME - Recall the last time a user said something"
+  end
+  
   def on_connect(*)
     @filepath = config[:file] || raise("Missing required argument: :file")
     @file = File.open(@filepath, "a+")

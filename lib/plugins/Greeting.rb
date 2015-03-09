@@ -13,7 +13,8 @@ class Cinch::Greeting
   #match /^(hi|hello)$/i, use_prefix: false, method: :hello
   
   match /(^|^hal.+)(thanks|thank you)($|([:,!\.\?]?\s)hal)/i, use_prefix: false, method: :thanks
-  match /(^helo|ehlo)(.*)$/i, use_prefix: false, method: :smtp
+  match /(^helo|^ehlo)(.*)$/i, use_prefix: false, method: :smtp
+  match /^syn$/i, use_prefix: false, method: :ack
   listen_to :join, method: :join
   listen_to :help, method: :help
   
@@ -23,16 +24,17 @@ class Cinch::Greeting
       prefix = ""
     end
     
-    m.reply "#{prefix}#{plugin_name} good (morning|afternoon|evening)"
-    m.reply "#{prefix}#{plugin_name} (hi|hello)"
-    m.reply "#{prefix}#{plugin_name} thanks"
-    m.reply "#{prefix}#{plugin_name} some-smtp-commands-work"
+    m.reply "#{prefix}Greeting good (morning|afternoon|evening)"
+    m.reply "#{prefix}Greeting (hi|hello)"
+    m.reply "#{prefix}Greeting thanks"
+    m.reply "#{prefix}Greeting (HELO|EHLO) NAME - SMTP like hello and function list"
+    m.reply "#{prefix}Greeting SYN - ACK"
   end
   
   def join(m)
     unless m.user.nick == bot.nick
       if(Time.now.hour < 5) 
-	m.reply "You're here way too late #{m.user.nick}!"
+	m.reply "You're here way too late / early #{m.user.nick}!"
       elsif(Time.now.hour < 12)
 	m.reply "Good morning #{m.user.nick}!"
       elsif(Time.now.hour < 17)  
@@ -55,21 +57,26 @@ class Cinch::Greeting
     m.reply "You're welcome, #{m.user.nick}"
   end
   
-  def smtp(m, command, hname = nil)
+  def smtp(m, command, hname = "")
     if(command.downcase == "ehlo")
-      if(hname.nil?)
-	m.reply "501 Syntax: EHLO name"
+      if(hname.empty?)
+	m.reply "501 Syntax: EHLO [your name]"
       else
-	helo(m, hname)
+	smtp(m, "helo", hname)
 	m.reply "250 ehlo-plugin-help"
 	@bot.handlers.dispatch :help, m, "250-"
       end
     elsif(command.downcase == "helo")
-      if(hname.nil?)
-	m.reply "501 Syntax: HELO name"
+      if(hname.empty?)
+	m.reply "501 Syntax: HELO [your name]"
       else
-	m.reply "250 hal-9000.csl.illinois.edu Hello #{hname} [\"#{m.user.nick}\" #{m.user.authname}@#{m.user.host}]"
+	hname.strip!
+	m.reply "250 hal-9000.csl.illinois.edu Hello #{hname} [\"#{m.user.nick}\" #{m.user.user}@#{m.user.host}]"
       end
     end
+  end
+  
+  def ack(m)
+    m.reply "ACK"
   end
 end

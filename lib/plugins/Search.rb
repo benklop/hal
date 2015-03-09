@@ -1,16 +1,25 @@
 require 'cinch'
 require 'google-search'
 require 'htmlentities'
+require 'nokogiri'
 
 class Cinch::Search
   include Cinch::Plugin
-  
-  #plugin_name = "Search"
   
   match /google (.+)/, method: :websearch
   match /gg (.+)/, method: :websearch
   match /^(hal|Hal).? (.+)\?$/, use_prefix: false, method: :websearchtext
   @@lastsearch = nil
+  
+  listen_to :help, method: :help
+  def help(m, prefix)
+    if(prefix.nil?)
+      prefix = ""
+    end
+    
+    m.reply "#{prefix}Search (!google|!gg) QUERY - search the web"
+    m.reply "#{prefix}Search (hal|Hal) QUERY? - ask hal a question"
+  end
   
   def search(query)
     search = Google::Search::Web.new do |search|

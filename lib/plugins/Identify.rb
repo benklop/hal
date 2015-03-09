@@ -3,9 +3,8 @@ require "openssl"
 class Cinch::Identify
       include Cinch::Plugin
       
-      #plugin_name = "Identify"
-      
       listen_to :connect, method: :identify
+      
       def identify(m)
         case config[:type]
           when :quakenet

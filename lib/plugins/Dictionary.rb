@@ -9,6 +9,15 @@ class Cinch::Dictionary
   
   @@word_hash = {}
   
+  listen_to :help, method: :help
+  def help(m, prefix)
+    if(prefix.nil?)
+      prefix = ""
+    end
+    
+    m.reply "#{prefix}Dictionary (!define|!def) WORD - Define a word"
+  end
+  
   def execute(m, word)
       puts "defining #{word}"
       api_key = config[:api_key] || raise("Missing required argument: :api_key")
